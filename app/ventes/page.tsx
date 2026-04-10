@@ -3,8 +3,8 @@
 import { useState } from "react";
 
 const ventes = [
-  { id: "TR-1042", client: "Ahmmed M.", initials: "AM", amount: 3200, date: "09 Avr 2025" },
-  { id: "TR-1041", client: "Sara B.", initials: "SB", amount: 1800, date: "09 Avr 2026"},
+  { id: "TR-1042", client: "Anis M.", initials: "AM", amount: 8500, date: "10 Avr 2026" },
+  { id: "TR-1041", client: "Sara B.", initials: "SB", amount: 1800, date: "10 Avr 2026"},
   { id: "TR-1040", client: "Karim H.", initials: "KH", amount: 5500, date: "08 Avr 2026"},
   { id: "TR-1039", client: "Nadia R.", initials: "NR", amount: 900, date: "08 Avr 2026" },
   { id: "TR-1038", client: "Youcef L.", initials: "YL", amount: 2100, date: "07 Avr 2026" },
@@ -31,8 +31,7 @@ function parseDate(dateStr: string): Date {
 
 function filtrerParPeriode(liste: typeof ventes, filtre: string) {
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
+  
   return liste.filter((v) => {
     const d = parseDate(v.date);
     if (filtre === "Aujourd'hui") {
@@ -105,8 +104,11 @@ export default function VentesPage() {
     <div className="p-5 flex flex-col gap-4">
 
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-lg font-medium text-gray-900">Historique des ventes</h1>
+     <div className="flex flex-col gap-1">
+        <h1 className="text-lg font-medium text-gray-900 uppercase tracking-wide">Historique des ventes</h1>
+        <p className="text-sm text-gray-400 mt-0.5">
+           Visualisation et gestion complète des transactions de votre magasin.
+          </p>
       </div>
 
       {/* Stats */}

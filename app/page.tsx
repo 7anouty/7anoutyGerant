@@ -1,225 +1,257 @@
 "use client";
 
 import { useState } from "react";
+import { Eye, EyeOff, Shield, AlertCircle, CheckCircle } from "lucide-react";
 
-const ventes = [
-  { id: "TR-1042", client: "Ahmmed M.", initials: "AM", amount: 3200, date: "09 Avr 2025" },
-  { id: "TR-1041", client: "Sara B.", initials: "SB", amount: 1800, date: "09 Avr 2026"},
-  { id: "TR-1040", client: "Karim H.", initials: "KH", amount: 5500, date: "08 Avr 2026"},
-  { id: "TR-1039", client: "Nadia R.", initials: "NR", amount: 900, date: "08 Avr 2026" },
-  { id: "TR-1038", client: "Youcef L.", initials: "YL", amount: 2100, date: "07 Avr 2026" },
-  { id: "TR-1042", client: "Ahmed M.", initials: "AM", amount: 3200, date: "09 Avr 2026"},
-  { id: "TR-1041", client: "Sara B.", initials: "SB", amount: 1800, date: "09 Avr 2026"},
-  { id: "TR-1040", client: "Karim H.", initials: "KH", amount: 5500, date: "08 Avr 2026"},
-  { id: "TR-1039", client: "Nadia R.", initials: "NR", amount: 900, date: "08 Avr 2026"},
-  { id: "TR-1038", client: "Youcef L.", initials: "YL", amount: 2100, date: "07 Avr 2026"},
-  { id: "TR-1041", client: "Sara B.", initials: "SB", amount: 1800, date: "09 Avr 2026"},
-  { id: "TR-1040", client: "Karim H.", initials: "KH", amount: 5500, date: "08 Avr 2026" },
-  { id: "TR-1039", client: "Nadia R.", initials: "NR", amount: 900, date: "08 Avr 2026" },
-  { id: "TR-1038", client: "Youcef L.", initials: "YL", amount: 2100, date: "07 Avr 2026"},
-];
-
-const moisMap: Record<string, number> = {
-  Jan: 0, Fév: 1, Mar: 2, Avr: 3, Mai: 4, Jun: 5,
-  Jul: 6, Aoû: 7, Sep: 8, Oct: 9, Nov: 10, Déc: 11,
+const COMPTE_INITIAL = {
+  email: "y.amrani@7anouty.ma",
+  password: "motdepasse123",
 };
 
-function parseDate(dateStr: string): Date {
-  const [jour, mois, annee] = dateStr.split(" ");
-  return new Date(parseInt(annee), moisMap[mois], parseInt(jour));
-}
+export default function ConfigurationPage() {
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-function filtrerParPeriode(liste: typeof ventes, filtre: string) {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const [compte, setCompte] = useState(COMPTE_INITIAL);
 
-  return liste.filter((v) => {
-    const d = parseDate(v.date);
-    if (filtre === "Aujourd'hui") {
-      return d.toDateString() === today.toDateString();
+  const [newEmail, setNewEmail] = useState("");
+  const [confirmEmail, setConfirmEmail] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [errors, setErrors] = useState<string[]>([]);
+  const [success, setSuccess] = useState(false);
+
+  function handleEnregistrer() {
+    const errs: string[] = [];
+    setSuccess(false);
+
+    const wantsEmail = newEmail.trim() !== "" || confirmEmail.trim() !== "";
+    const wantsPassword = currentPassword !== "" || newPassword !== "" || confirmPassword !== "";
+
+    if (!wantsEmail && !wantsPassword) {
+      setErrors(["Aucune modification à enregistrer."]);
+      return;
     }
-    if (filtre === "Ce mois") {
-      return (
-        d.getMonth() === today.getMonth() &&
-        d.getFullYear() === today.getFullYear()
-      );
+
+    if (wantsEmail) {
+      if (!newEmail.trim()) errs.push("Veuillez entrer le nouvel email.");
+      else if (!newEmail.includes("@")) errs.push("L'email est invalide.");
+      else if (newEmail !== confirmEmail) errs.push("Les emails ne correspondent pas.");
     }
-    if (filtre === "Cette année") {
-      return d.getFullYear() === today.getFullYear();
+
+    if (wantsPassword) {
+      if (currentPassword !== compte.password)
+        errs.push("Le mot de passe actuel est incorrect.");
+      if (!newPassword) errs.push("Veuillez entrer un nouveau mot de passe.");
+      else if (newPassword.length < 8) errs.push("Le mot de passe doit contenir au moins 8 caractères.");
+      else if (newPassword !== confirmPassword) errs.push("Les mots de passe ne correspondent pas.");
     }
-    return true;
-  });
-}
 
-function formatMontant(val: number): string {
-  return val.toLocaleString("fr-DZ") + " DA";
-}
+    if (errs.length > 0) {
+      setErrors(errs);
+      return;
+    }
 
-const PAR_PAGE = 10;
+    setCompte((prev) => ({
+      email: wantsEmail ? newEmail : prev.email,
+      password: wantsPassword ? newPassword : prev.password,
+    }));
 
-export default function VentesPage() {
-  const [page, setPage] = useState(1);
-  const [filtre, setFiltre] = useState("Tous");
-  const [recherche, setRecherche] = useState("");
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  
-  const totalRevenus = ventes.reduce((sum, v) => sum + v.amount, 0);
-  
-  const ventesAujourdhui = ventes.filter(
-    (v) => parseDate(v.date).toDateString() === today.toDateString()
-  );
-  const totalAujourdhui = ventesAujourdhui.reduce((sum, v) => sum + v.amount, 0);
-
-  const panierMoyen =
-    ventesAujourdhui.length > 0
-      ? Math.round(totalAujourdhui / ventesAujourdhui.length)
-      : 0;
-
-  // Table filtrée
-  const ventesFiltrees = filtrerParPeriode(ventes, filtre).filter((v) => {
-    const q = recherche.toLowerCase().trim();
-    if (!q) return true;
-    return (
-      v.client.toLowerCase().includes(q) ||
-      v.id.toLowerCase().includes(q)
-    );
-  });
-
-  const totalPages = Math.max(1, Math.ceil(ventesFiltrees.length / PAR_PAGE));
-  const ventesPage = ventesFiltrees.slice((page - 1) * PAR_PAGE, page * PAR_PAGE);
-
-  function handleFiltre(val: string) {
-    setFiltre(val);
-    setPage(1);
-  }
-
-  function handleRecherche(val: string) {
-    setRecherche(val);
-    setPage(1);
+    setErrors([]);
+    setSuccess(true);
+    setNewEmail("");
+    setConfirmEmail("");
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
   }
 
   return (
-    <div className="p-5 flex flex-col gap-4">
+    <div className="p-6 flex flex-col gap-5 h-full">
 
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-lg font-medium text-gray-900">Historique des ventes</h1>
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="text-lg font-medium text-gray-900 uppercase tracking-wide">
+            Configuration du compte
+          </h1>
+          <p className="text-sm text-gray-400 mt-0.5">
+            Gérez vos informations d'accès et sécurisez votre compte administrateur.
+          </p>
+        </div>
+        <button type="button" onClick={handleEnregistrer} className="px-4 py-2 text-sm text-white bg-[#064e3b] rounded-md hover:bg-[#065f46] transition-colors">
+          Enregistrer les modifications
+        </button>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        <div className="bg-[#064e3b] text-white p-4 rounded-xl">
-          <p className="text-xs text-white/70 mb-1">Total revenus</p>
-          <h3 className="text-xl font-medium">{formatMontant(totalRevenus)}</h3>
+      {/* Toast succès */}
+      {success && (
+        <div className="flex items-center gap-2 px-4 py-3 bg-emerald-50 border border-emerald-200 rounded-lg text-sm text-emerald-700">
+          <CheckCircle size={15} className="flex-shrink-0" />
+          Modifications enregistrées avec succès.
         </div>
-        <div className="bg-white p-4 rounded-xl border border-gray-200">
-          <p className="text-xs text-gray-500 mb-1">Ventes du jour</p>
-          <h3 className="text-xl font-medium text-gray-900">{formatMontant(totalAujourdhui)}</h3>
-        </div>
-        <div className="bg-white p-4 rounded-xl border border-gray-200">
-          <p className="text-xs text-gray-500 mb-1">Panier moyen</p>
-          <h3 className="text-xl font-medium text-gray-900">{formatMontant(panierMoyen)}</h3>
-        </div>
-      </div>
+      )}
 
-      {/* Table */}
-      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div className="flex justify-between items-center px-4 py-3 border-b border-gray-100 gap-3">
-          <div className="relative flex-1 max-w-xs">
-            <svg
-              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-black"
-              width="14" height="14" viewBox="0 0 24 24"
-              fill="none" stroke="currentColor" strokeWidth="2"
-              strokeLinecap="round" strokeLinejoin="round"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.35-4.35" />
-            </svg>
-            <input
-              type="text"
-              value={recherche}
-              onChange={(e) => handleRecherche(e.target.value)}
-              placeholder="Rechercher par client ou ID..."
-              className="w-full pl-8 pr-3 py-1.5 text-xs border border-gray-200 rounded-md text-black placeholder-black focus:outline-none focus:ring-1 focus:ring-[#064e3b] focus:border-[#064e3b]"
-            />
+      {/* Toast erreurs */}
+      {errors.length > 0 && (
+        <div className="flex flex-col gap-1 px-4 py-3 bg-red-50 border border-red-200 rounded-lg">
+          {errors.map((e, i) => (
+            <div key={i} className="flex items-center gap-2 text-sm text-red-600">
+              <AlertCircle size={13} className="flex-shrink-0" />
+              {e}
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 flex-1">
+
+        {/* Left */}
+        <div className="md:col-span-2 flex flex-col gap-5 flex-1">
+
+          {/* Identifiants */}
+          <div className="bg-white border border-gray-200 rounded-xl p-6 flex-1">
+            <div className="flex items-center gap-2 mb-6">
+              <div className="w-9 h-9 rounded-full bg-emerald-50 flex items-center justify-center flex-shrink-0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#064e3b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                </svg>
+              </div>
+              <h2 className="text-base font-medium text-gray-900 uppercase tracking-wide">
+                Identifiants de connexion
+              </h2>
+            </div>
+
+            <div className="flex flex-col gap-6">
+              <div>
+                <label className="block text-sm text-gray-400 uppercase tracking-wide mb-2">Email actuel</label>
+                <div className="flex items-center gap-2 px-4 py-3 border border-gray-200 rounded-md bg-gray-50">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+                  </svg>
+                  <span className="text-sm text-gray-500">{compte.email}</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm text-gray-400 uppercase tracking-wide mb-2">Nouvel email</label>
+                  <input
+                    type="email"
+                    value={newEmail}
+                    onChange={(e) => setNewEmail(e.target.value)}
+                    placeholder="Entrer le nouvel email"
+                    className="w-full px-4 py-3 text-sm border border-gray-200 rounded-md text-gray-700 placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-[#064e3b] focus:border-[#064e3b]"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-400 uppercase tracking-wide mb-2">Confirmer nouvel email</label>
+                  <input
+                    type="email"
+                    value={confirmEmail}
+                    onChange={(e) => setConfirmEmail(e.target.value)}
+                    placeholder="Confirmer le nouvel email"
+                    className="w-full px-4 py-3 text-sm border border-gray-200 rounded-md text-gray-700 placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-[#064e3b] focus:border-[#064e3b]"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
-          <select
-            value={filtre}
-            onChange={(e) => handleFiltre(e.target.value)}
-            className="text-xs text-black border border-gray-200 rounded-md px-2 py-1.5 bg-transparent flex-shrink-0"
-          >
-            <option>Tous</option>
-            <option>Aujourd'hui</option>
-            <option>Ce mois</option>
-            <option>Cette année</option>
-          </select>
-        </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-gray-100">
-                <th className="text-left px-4 py-2 text-xs font-medium text-gray-400 uppercase tracking-wide">Client</th>
-                <th className="text-left px-4 py-2 text-xs font-medium text-gray-400 uppercase tracking-wide">Transaction</th>
-                <th className="text-left px-4 py-2 text-xs font-medium text-gray-400 uppercase tracking-wide">Montant</th>
-                <th className="text-left px-4 py-2 text-xs font-medium text-gray-400 uppercase tracking-wide">Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ventesPage.length === 0 ? (
-                <tr>
-                  <td colSpan={4} className="text-center py-8 text-gray-400 text-sm">
-                    Aucune vente enregistrée
-                  </td>
-                </tr>
-              ) : (
-                ventesPage.map((vente, index) => (
-                  <tr key={`${vente.id}-${index}`} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-full bg-emerald-50 flex items-center justify-center text-[10px] font-medium text-[#064e3b] flex-shrink-0">
-                          {vente.initials}
-                        </div>
-                        <span className="text-gray-900">{vente.client}</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-black">{vente.id}</td>
-                    <td className="px-4 py-3 text-black">{formatMontant(vente.amount)}</td>
-                    <td className="px-4 py-3 text-black">{vente.date}</td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+          {/* Mot de passe */}
+          <div className="bg-white border border-gray-200 rounded-xl p-6 flex-1">
+            <div className="flex items-center gap-2 mb-6">
+              <div className="w-9 h-9 rounded-full bg-emerald-50 flex items-center justify-center flex-shrink-0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#064e3b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+              </div>
+              <h2 className="text-base font-medium text-gray-900 uppercase tracking-wide">
+                Sécurité du mot de passe
+              </h2>
+            </div>
 
-        {/* Pagination */}
-        <div className="flex justify-between items-center px-4 py-3 border-t border-gray-100">
-          <span className="text-xs text-gray-400">
-            {`${(page - 1) * PAR_PAGE + 1}–${Math.min(page * PAR_PAGE, ventesFiltrees.length)} sur ${ventesFiltrees.length} ventes`}
-          </span>
-          <div className="flex items-center gap-1">
-            <button
-              type="button"
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="px-2 py-1 text-xs border border-black rounded-md text-black hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            >
-              ←
-            </button>
-            <button
-              type="button"
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-              className="px-2 py-1 text-xs border border-black rounded-md text-black hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            >
-              →
-            </button>
+            <div className="flex flex-col gap-6">
+              <div>
+                <label className="block text-sm text-gray-400 uppercase tracking-wide mb-2">Mot de passe actuel</label>
+                <div className="relative">
+                  <input
+                    type={showCurrentPassword ? "text" : "password"}
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder="••••••••••"
+                    className="w-full px-4 py-3 pr-10 text-sm border border-gray-200 rounded-md text-gray-700 placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-[#064e3b] focus:border-[#064e3b]"
+                  />
+                  <button type="button" onClick={() => setShowCurrentPassword(!showCurrentPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-500">
+                    {showCurrentPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm text-gray-400 uppercase tracking-wide mb-2">Nouveau mot de passe</label>
+                  <div className="relative">
+                    <input
+                      type={showNewPassword ? "text" : "password"}
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="Minimum 8 caractères"
+                      className="w-full px-4 py-3 pr-10 text-sm border border-gray-200 rounded-md text-gray-700 placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-[#064e3b] focus:border-[#064e3b]"
+                    />
+                    <button type="button" onClick={() => setShowNewPassword(!showNewPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-500">
+                      {showNewPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-400 uppercase tracking-wide mb-2">Confirmer mot de passe</label>
+                  <div className="relative">
+                    <input
+                      type={showConfirmPassword ? "text" : "password"}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Répétez le mot de passe"
+                      className="w-full px-4 py-3 pr-10 text-sm border border-gray-200 rounded-md text-gray-700 placeholder-gray-300 focus:outline-none focus:ring-1 focus:ring-[#064e3b] focus:border-[#064e3b]"
+                    />
+                    <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-500">
+                      {showConfirmPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+
+        {/* Right — Conseils */}
+        <div className="flex flex-col flex-1">
+          <div className="bg-white border border-gray-200 rounded-xl p-6 flex-1">
+            <div className="flex items-center gap-2 mb-6">
+              <Shield size={30} className="text-[#064e3b]" />
+              <h2 className="text-base font-medium text-gray-900 uppercase tracking-wide">
+                Conseils de sécurité
+              </h2>
+            </div>
+            <ul className="flex flex-col gap-5">
+              {[
+                "Utilisez un mot de passe unique que vous n'utilisez pour aucun autre compte en ligne.",
+                "Votre mot de passe doit contenir au moins 8 caractères.",
+                "Le changement d'email nécessite une nouvelle connexion lors de votre prochaine session.",
+              ].map((conseil, i) => (
+                <li key={i} className="flex items-start gap-3">
+                  <AlertCircle size={15} className="text-[#064e3b] flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-gray-500 leading-relaxed">{conseil}</span>
+                </li>
+              ))}
+            </ul>
+           
+          </div>
+        </div>
+
       </div>
     </div>
   );
