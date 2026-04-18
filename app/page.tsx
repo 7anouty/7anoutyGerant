@@ -50,7 +50,7 @@ export default function LoginPage() {
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-white mb-2">Ravi de vous revoir</h1>
         <p className="text-white/55 text-sm max-w-xs leading-relaxed">
-          Accédez à votre tableau de bord de gestion<br />
+          Accédez a votre tableau de bord de gestion<br />
           commerciale en toute sécurité
         </p>
       </div>
