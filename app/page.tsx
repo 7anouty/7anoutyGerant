@@ -34,8 +34,8 @@ export default function LoginPage() {
   return (
     <main className="min-h-screen bg-[#064e3b] flex flex-col items-center justify-center px-4">
 
-      {/* Logo + nom au-dessus du titre */}
-      <div className="flex items-center gap-0 mb-8">
+      
+      <div className="flex items-center gap-0 mb-4">
         <Image
           src="/logoo.png"
           alt="7anouty"
@@ -46,7 +46,7 @@ export default function LoginPage() {
       
       </div>
 
-      {/* Titre + sous-titre */}
+      
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-white mb-2">Ravi de vous revoir</h1>
         <p className="text-white/55 text-sm max-w-xs leading-relaxed">
@@ -55,7 +55,7 @@ export default function LoginPage() {
         </p>
       </div>
 
-      {/* White card */}
+    
       <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl p-8">
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {/* Email */}
