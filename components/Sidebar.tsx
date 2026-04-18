@@ -44,22 +44,21 @@ export default function Sidebar() {
   return (
     <aside className="w-52 bg-[#064e3b] text-white flex flex-col p-3 flex-shrink-0 min-h-screen">
       {/* Logo */}
-      <div className="flex items-center gap-0 px-1 py-2 mb-2">
+      <div className="flex items-center px-1 py-1 mb-0">
         <Image
-          src="/logo.png"
+          src="/logoo.png"
           alt="7anouty logo"
-          width={70}
-          height={28}
+          width={170}
+          height={40}
           className="rounded-md flex-shrink-0"
         />
-        <h1 className="text-lg font-semibold text-white">7anouty</h1>
       </div>
 
       {/* Nav sections */}
-      <nav className="flex flex-col gap-2 flex-1">
+      <nav className="flex flex-col gap-1 flex-1">
         {navSections.map((section) => (
           <div key={section.label}>
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/35 px-2.5 pt-3 pb-1.5">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/35 px-2.5 pt-2 pb-1">
               {section.label}
             </p>
             {section.items.map((item) => {

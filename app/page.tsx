@@ -35,15 +35,15 @@ export default function LoginPage() {
     <main className="min-h-screen bg-[#064e3b] flex flex-col items-center justify-center px-4">
 
       {/* Logo + nom au-dessus du titre */}
-      <div className="flex items-center gap-0 mb-5">
+      <div className="flex items-center gap-0 mb-8">
         <Image
-          src="/logo.png"
+          src="/logoo.png"
           alt="7anouty"
-          width={100}
-          height={100}
+          width={300}
+          height={300}
           className="object-contain"
         />
-        <span className="text-white text-2xl font-bold tracking-tight">7anouty</span>
+      
       </div>
 
       {/* Titre + sous-titre */}

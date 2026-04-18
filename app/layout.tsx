@@ -31,9 +31,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={cn(geistSans.variable, geistMono.variable, "font-sans", inter.variable)}>
-      <body> <div className="flex min-h-screen bg-gray-100">
+      <body> <div className="flex min-h-screen bg-[#064e3b]">
           
-          <main className="flex-1 bg-gray-100">
+          <main className="flex-1 bg-[#064e3b]">
             {children}
           </main>
         </div></body>
