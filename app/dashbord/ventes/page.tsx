@@ -1,39 +1,48 @@
 "use client";
 
 import { useState } from "react";
+import { CountingNumber } from "@/components/ui/counting-number";
 
-const ventes = [
-  { id: "TR-1042", client: "Anis M.", initials: "AM", amount: 8500, date: "10 Avr 2026" },
-  { id: "TR-1041", client: "Sara B.", initials: "SB", amount: 1800, date: "10 Avr 2026"},
-  { id: "TR-1040", client: "Karim H.", initials: "KH", amount: 5500, date: "08 Avr 2026"},
-  { id: "TR-1039", client: "Nadia R.", initials: "NR", amount: 900, date: "08 Avr 2026" },
-  { id: "TR-1038", client: "Youcef L.", initials: "YL", amount: 2100, date: "07 Avr 2026" },
-  { id: "TR-1042", client: "Ahmed M.", initials: "AM", amount: 3200, date: "09 Avr 2026"},
-  { id: "TR-1041", client: "Sara B.", initials: "SB", amount: 1800, date: "09 Avr 2026"},
-  { id: "TR-1040", client: "Karim H.", initials: "KH", amount: 5500, date: "08 Avr 2026"},
-  { id: "TR-1039", client: "Nadia R.", initials: "NR", amount: 900, date: "08 Avr 2026"},
-  { id: "TR-1038", client: "Youcef L.", initials: "YL", amount: 2100, date: "07 Avr 2026"},
-  { id: "TR-1041", client: "Sara B.", initials: "SB", amount: 1800, date: "09 Avr 2026"},
-  { id: "TR-1040", client: "Karim H.", initials: "KH", amount: 5500, date: "08 Avr 2026" },
-  { id: "TR-1039", client: "Nadia R.", initials: "NR", amount: 900, date: "08 Avr 2026" },
-  { id: "TR-1038", client: "Youcef L.", initials: "YL", amount: 2100, date: "07 Avr 2026"},
-];
 
-const moisMap: Record<string, number> = {
-  Jan: 0, Fév: 1, Mar: 2, Avr: 3, Mai: 4, Jun: 5,
-  Jul: 6, Aoû: 7 , Sep: 8, Oct: 9, Nov: 10, Déc: 11,
+type ventes = {
+  id: string;
+  client: string;
+  amount: number;
+  date: string;
 };
 
-function parseDate(dateStr: string): Date {
-  const [jour, mois, annee] = dateStr.split(" ");
-  return new Date(parseInt(annee), moisMap[mois], parseInt(jour));
+const ventes = [
+  { id: "TR-1043", client: "Ramy Kaci",   amount: 8500, date: "2026-04-17" },
+  { id: "TR-1042", client: "Anis M.",     amount: 2500, date: "2026-04-17" },
+  { id: "TR-1041", client: "Sara B.",     amount: 1800, date: "2026-04-11" },
+  { id: "TR-1040", client: "Karim H.",    amount: 5500, date: "2026-04-08" },
+  { id: "TR-1039", client: "Nadia R.",    amount:  900, date: "2026-04-08" },
+  { id: "TR-1038", client: "Youcef L.",   amount: 2100, date: "2026-04-07" },
+  { id: "TR-1042", client: "Ahmed M.",    amount: 3200, date: "2026-04-09" },
+  { id: "TR-1041", client: "Sara B.",     amount: 1800, date: "2026-04-09" },
+  { id: "TR-1040", client: "Karim H.",    amount: 5500, date: "2026-04-08" },
+  { id: "TR-1039", client: "Nadia R.",    amount:  900, date: "2026-04-08" },
+  { id: "TR-1038", client: "Youcef L.",   amount: 2100, date: "2026-04-07" },
+  { id: "TR-1041", client: "Sara B.",     amount: 1800, date: "2026-04-09" },
+  { id: "TR-1040", client: "Karim H.",    amount: 5500, date: "2026-04-08" },
+  { id: "TR-1039", client: "Nadia R.",    amount:  900, date: "2024-12-08" },
+  { id: "TR-1038", client: "Youcef L.",   amount: 2100, date: "2026-04-07" },
+];
+
+function formatDate(dateStr: string): string {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString("fr-DZ", { day: "2-digit", month: "short", year: "numeric" });
+}
+
+function getInitiales(client: string): string {
+  return client.split(" ").slice(0, 2).map((w) => w[0]).join("").toUpperCase();
 }
 
 function filtrerParPeriode(liste: typeof ventes, filtre: string) {
   const today = new Date();
-  
+
   return liste.filter((v) => {
-    const d = parseDate(v.date);
+    const d = new Date(v.date);
     if (filtre === "Aujourd'hui") {
       return d.toDateString() === today.toDateString();
     }
@@ -64,11 +73,10 @@ export default function VentesPage() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  
   const totalRevenus = ventes.reduce((sum, v) => sum + v.amount, 0);
-  
+
   const ventesAujourdhui = ventes.filter(
-    (v) => parseDate(v.date).toDateString() === today.toDateString()
+    (v) => new Date(v.date).toDateString() === today.toDateString()
   );
   const totalAujourdhui = ventesAujourdhui.reduce((sum, v) => sum + v.amount, 0);
 
@@ -77,7 +85,6 @@ export default function VentesPage() {
       ? Math.round(totalAujourdhui / ventesAujourdhui.length)
       : 0;
 
-  // Table filtrée
   const ventesFiltrees = filtrerParPeriode(ventes, filtre).filter((v) => {
     const q = recherche.toLowerCase().trim();
     if (!q) return true;
@@ -104,26 +111,35 @@ export default function VentesPage() {
     <div className="p-5 flex flex-col gap-4">
 
       {/* Header */}
-     <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1">
         <h1 className="text-lg font-medium text-gray-900 uppercase tracking-wide">Historique des ventes</h1>
         <p className="text-sm text-gray-400 mt-0.5">
-           Visualisation et gestion complète des transactions de votre magasin.
-          </p>
+          Visualisation et gestion complète des transactions de votre magasin.
+        </p>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <div className="bg-[#064e3b] text-white p-4 rounded-xl">
           <p className="text-xs text-white/70 mb-1">Total revenus</p>
-          <h3 className="text-xl font-medium">{formatMontant(totalRevenus)}</h3>
+          <h3 className="text-xl font-medium flex items-baseline gap-1">
+            <CountingNumber number={totalRevenus} />
+            <span className="text-sm font-normal text-white/70">DA</span>
+          </h3>
         </div>
         <div className="bg-white p-4 rounded-xl border border-gray-200">
           <p className="text-xs text-gray-500 mb-1">Ventes du jour</p>
-          <h3 className="text-xl font-medium text-gray-900">{formatMontant(totalAujourdhui)}</h3>
+          <h3 className="text-xl font-medium text-gray-900 flex items-baseline gap-1">
+            <CountingNumber number={totalAujourdhui} />
+            <span className="text-sm font-normal text-gray-400">DA</span>
+          </h3>
         </div>
         <div className="bg-white p-4 rounded-xl border border-gray-200">
           <p className="text-xs text-gray-500 mb-1">Panier moyen</p>
-          <h3 className="text-xl font-medium text-gray-900">{formatMontant(panierMoyen)}</h3>
+          <h3 className="text-xl font-medium text-gray-900 flex items-baseline gap-1">
+            <CountingNumber number={panierMoyen} />
+            <span className="text-sm font-normal text-gray-400">DA</span>
+          </h3>
         </div>
       </div>
 
@@ -131,14 +147,8 @@ export default function VentesPage() {
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <div className="flex justify-between items-center px-4 py-3 border-b border-gray-100 gap-3">
           <div className="relative flex-1 max-w-xs">
-            <svg
-              className="absolute left-2.5 top-1/2 -translate-y-1/2 text-black"
-              width="14" height="14" viewBox="0 0 24 24"
-              fill="none" stroke="currentColor" strokeWidth="2"
-              strokeLinecap="round" strokeLinejoin="round"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.35-4.35" />
+            <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 text-black" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
             </svg>
             <input
               type="text"
@@ -182,15 +192,15 @@ export default function VentesPage() {
                   <tr key={`${vente.id}-${index}`} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-full bg-emerald-50 flex items-center justify-center text-[10px] font-medium text-[#064e3b] flex-shrink-0">
-                          {vente.initials}
+                        <div className="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-[10px] font-medium text-[#064e3b] flex-shrink-0">
+                          {getInitiales(vente.client)}
                         </div>
                         <span className="text-gray-900">{vente.client}</span>
                       </div>
                     </td>
                     <td className="px-4 py-3 text-black">{vente.id}</td>
                     <td className="px-4 py-3 text-black">{formatMontant(vente.amount)}</td>
-                    <td className="px-4 py-3 text-black">{vente.date}</td>
+                    <td className="px-4 py-3 text-black">{formatDate(vente.date)}</td>
                   </tr>
                 ))
               )}

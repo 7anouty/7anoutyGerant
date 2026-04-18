@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Eye, EyeOff, Shield, AlertCircle, CheckCircle } from "lucide-react";
 
 const COMPTE_INITIAL = {
-  email: "y.amrani@7anouty.ma",
+  email: "ramimiriri@gmail.com",
   password: "motdepasse123",
 };
 
@@ -44,7 +44,6 @@ export default function ConfigurationPage() {
     if (wantsPassword) {
       if (currentPassword !== compte.password)
         errs.push("Le mot de passe actuel est incorrect.");
-      if (!newPassword) errs.push("Veuillez entrer un nouveau mot de passe.");
       else if (newPassword.length < 8) errs.push("Le mot de passe doit contenir au moins 8 caractères.");
       else if (newPassword !== confirmPassword) errs.push("Les mots de passe ne correspondent pas.");
     }

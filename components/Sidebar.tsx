@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   ShoppingCart,
@@ -10,24 +10,41 @@ import {
   TrendingUp,
   Users,
   Settings,
+  LogOut,
 } from "lucide-react";
 
-const navItems = [
-  { label: "Tableau de bord", href: "/tableau", icon: LayoutDashboard },
-  { label: "Ventes", href: "/ventes", icon: ShoppingCart },
-  { label: "Produits", href: "/produits", icon: Package },
-  { label: "Offres & Promo", href: "/offres", icon: TrendingUp },
-  { label: "Clients", href: "/clients", icon: Users },
-  { label: "Configuration", href: "/configuration", icon: Settings },
+const navSections = [
+  {
+    label: "Principale",
+    items: [
+      { label: "Tableau de bord", href: "/dashbord/tableau", icon: LayoutDashboard },
+    ],
+  },
+  {
+    label: "Gestion",
+    items: [
+      { label: "Ventes", href: "/dashbord/ventes", icon: ShoppingCart },
+      { label: "Produits", href: "/dashbord/produits", icon: Package },
+      { label: "Offres & Promos", href: "/dashbord/offres", icon: TrendingUp },
+      { label: "Clients", href: "/dashbord/clients", icon: Users },
+    ],
+  },
+  {
+    label: "Paramètres",
+    items: [
+      { label: "Configuration", href: "/dashbord/configuration", icon: Settings },
+    ],
+  },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
 
   return (
-    <aside className="w-52 bg-[#064e3b] text-white flex flex-col p-4 flex-shrink-0 min-h-screen">
-      {/* Logo + Nom */}
-      <div className="flex items-center gap-0 px-0 py-2 mb-2">
+    <aside className="w-52 bg-[#064e3b] text-white flex flex-col p-3 flex-shrink-0 min-h-screen">
+      {/* Logo */}
+      <div className="flex items-center gap-0 px-1 py-2 mb-2">
         <Image
           src="/logo.png"
           alt="7anouty logo"
@@ -35,29 +52,61 @@ export default function Sidebar() {
           height={28}
           className="rounded-md flex-shrink-0"
         />
-        <h1 className="text-lg font-medium text-white">7anouty</h1>
+        <h1 className="text-lg font-semibold text-white">7anouty</h1>
       </div>
 
-      <nav className="flex flex-col gap-1">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = pathname === item.href;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors ${
-                isActive
-                  ? "bg-white/15 text-white"
-                  : "text-white/65 hover:text-white hover:bg-white/10"
-              }`}
-            >
-              <Icon size={18} strokeWidth={1.8} />
-              {item.label}
-            </Link>
-          );
-        })}
+      {/* Nav sections */}
+      <nav className="flex flex-col gap-2 flex-1">
+        {navSections.map((section) => (
+          <div key={section.label}>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-white/35 px-2.5 pt-3 pb-1.5">
+              {section.label}
+            </p>
+            {section.items.map((item) => {
+              const Icon = item.icon;
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-sm transition-colors ${
+                    isActive
+                      ? "bg-white/15 text-white"
+                      : "text-white/60 hover:text-white hover:bg-white/10"
+                  }`}
+                >
+                  <Icon size={25} strokeWidth={1.8} />
+                  {item.label}
+                </Link>
+              );
+            })}
+          </div>
+        ))}
       </nav>
+
+      {/* Bottom user bar */}
+      <div className="border-t border-white/10 pt-3 mt-2 flex items-center gap-1">
+        <Link
+          href="/dashbord/configuration"
+          className="flex items-center gap-2 flex-1 px-2 py-1.5 rounded-lg hover:bg-white/10 transition-colors min-w-0"
+        >
+          <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold flex-shrink-0">
+            RK
+          </div>
+          <div className="min-w-0">
+            <p className="text-xs font-semibold text-white truncate">Ramy Kaci</p>
+            <p className="text-[10px] text-white/40 uppercase tracking-wide">gerant du supermaché</p>
+          </div>
+        </Link>
+
+        <button
+          onClick={() => router.push("/")}
+          title="Se déconnecter"
+          className="w-8 h-8 flex items-center justify-center rounded-lg text-white/40 hover:text-red-400 hover:bg-red-400/10 transition-colors flex-shrink-0"
+        >
+          <LogOut size={25} strokeWidth={2} />
+        </button>
+      </div>
     </aside>
   );
 }
