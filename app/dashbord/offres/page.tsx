@@ -187,6 +187,7 @@ export default function OffresPage() {
     form.titre.trim() !== "" &&
     form.dateDebut !== "" &&
     form.dateFin !== "" &&
+    form.dateDebut <= form.dateFin &&
     form.nouveauPrix > 0 &&
     form.produitsIds.length > 0;
 
@@ -444,6 +445,7 @@ export default function OffresPage() {
                   <input
                     type="date"
                     value={form.dateDebut}
+                    max={form.dateFin || undefined} 
                     onChange={(e) => setForm((f) => ({ ...f, dateDebut: e.target.value }))}
                     className="text-xs border border-gray-200 rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#064e3b] focus:border-[#064e3b]"
                   />
@@ -453,6 +455,7 @@ export default function OffresPage() {
                   <input
                     type="date"
                     value={form.dateFin}
+                    min={form.dateDebut || undefined}
                     onChange={(e) => setForm((f) => ({ ...f, dateFin: e.target.value }))}
                     className="text-xs border border-gray-200 rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#064e3b] focus:border-[#064e3b]"
                   />
