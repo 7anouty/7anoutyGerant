@@ -5,11 +5,13 @@ import { CountingNumber } from "@/components/ui/counting-number";
 
 type Statut = "En stock" | "Stock faible" | "Rupture";
 type Event = "NORMAL" | "RAMADAN" | "AID" | "VENDREDI";
+type Rayon = "C1" | "C2" | "C3" | "C4" | "C5" | "C6" | "C7" | "C8";
 
 type Produit = {
   id: string;
   nom: string;
   categorie: string;
+  rayon: Rayon;
   ingredients: string[];
   labels: string[];
   event: Event;
@@ -30,6 +32,17 @@ const CATEGORIES = [
   "Surgelés",
 ];
 
+const CATEGORIE_RAYON: Record<string, Rayon> = {
+  "Fruits et Légumes": "C1",
+  "Boulangerie":       "C2",
+  "Boucherie":         "C3",
+  "Produits Laitiers": "C4",
+  "Boissons":          "C5",
+  "Épicerie":          "C6",
+  "Snack":             "C7",
+  "Surgelés":          "C8",
+};
+
 const INGREDIENTS_LIST = [
   "Eau", "Sucre", "Sel", "Huile", "Lait", "Beurre",
   "Œufs", "Arome", "Colorant", "Gélatine", "Farine",
@@ -49,19 +62,19 @@ const STATUT_CONFIG: Record<Statut, { label: string; bg: string; text: string }>
 };
 
 const PRODUITS_INITIAUX: Produit[] = [
-  { id: "REF-1022", nom: "Huile d'Olive Souss 2L",      categorie: "Épicerie",          ingredients: ["Huile"],               labels: ["Bio"],           event: "NORMAL",   stock: 45,  statut: "En stock",    prix: 1050,   image: null },
-  { id: "REF-1021", nom: "Huile d'Olive Souss 1L",      categorie: "Épicerie",          ingredients: ["Huile"],               labels: ["Bio"],           event: "NORMAL",   stock: 43,   statut: "En stock",     prix: 850,   image: null },
-  { id: "REF-1234", nom: "Semoule Fine Extra 5kg",       categorie: "Boulangerie",       ingredients: ["Farine", "Gluten"],    labels: ["Végétarien"],    event: "NORMAL",   stock: 12,  statut: "En stock"  ,     prix: 4250,  image: null },
-  { id: "REF-2096", nom: "Thé Vert Sultan 200g",         categorie: "Boissons",          ingredients: ["Eau"],                 labels: ["Sans arôme"],    event: "RAMADAN",  stock: 0,   statut: "Rupture",     prix: 2200,  image: null },
-  { id: "REF-3042", nom: "Miel d'Oranger Pur 500g",      categorie: "Épicerie",          ingredients: ["Sucre"],               labels: ["Bio", "Vegan"],  event: "VENDREDI", stock: 18,  statut: "En stock",    prix: 13000, image: null },
-  { id: "REF-4413", nom: "Datte Medjool 1kg",            categorie: "Fruits et Légumes", ingredients: ["Sucre"],               labels: ["Bio", "Vegan"],  event: "AID",      stock: 5,   statut: "Stock faible",prix: 9600,  image: null },
-  { id: "REF-5521", nom: "Couscous Moyen 2kg",           categorie: "Boulangerie",       ingredients: ["Farine", "Gluten"],    labels: ["Végétarien"],    event: "NORMAL",   stock: 60,  statut: "En stock",    prix: 3200,  image: null },
-  { id: "REF-6630", nom: "Harissa Traditionnelle 200g",  categorie: "Épicerie",          ingredients: ["Huile", "Sel"],        labels: ["Vegan"],         event: "RAMADAN",  stock: 0,   statut: "Rupture",     prix: 1500,  image: null },
-  { id: "REF-7741", nom: "Eau Minérale Ifri 1.5L",       categorie: "Boissons",          ingredients: ["Eau"],                 labels: ["Sans colorant"], event: "NORMAL",   stock: 120, statut: "En stock",    prix: 600,   image: null },
-  { id: "REF-8852", nom: "Lait en Poudre 1kg",           categorie: "Produits Laitiers", ingredients: ["Lait"],                labels: ["Végétarien"],    event: "NORMAL",   stock: 9,   statut: "Stock faible",prix: 7800,  image: null },
-  { id: "REF-9963", nom: "Café Arabica Moulu 250g",      categorie: "Boissons",          ingredients: ["Eau"],                 labels: ["Sans arôme"],    event: "VENDREDI", stock: 34,  statut: "En stock",    prix: 4100,  image: null },
-  { id: "REF-1074", nom: "Huile de Table 5L",            categorie: "Épicerie",          ingredients: ["Huile"],               labels: [],                event: "NORMAL",   stock: 0,   statut: "Rupture",     prix: 8500,  image: null },
-  { id: "REF-1185", nom: "Sucre Blanc 2kg",              categorie: "Épicerie",          ingredients: ["Sucre"],               labels: ["Vegan"],         event: "NORMAL",   stock: 77,  statut: "En stock",    prix: 2100,  image: null },
+  { id: "REF-1022", nom: "Huile d'Olive Souss 2L",      categorie: "Épicerie",          rayon: "C6", ingredients: ["Huile"],               labels: ["Bio"],           event: "NORMAL",   stock: 45,  statut: "En stock",     prix: 1050,  image: null },
+  { id: "REF-1021", nom: "Huile d'Olive Souss 1L",      categorie: "Épicerie",          rayon: "C6", ingredients: ["Huile"],               labels: ["Bio"],           event: "NORMAL",   stock: 43,  statut: "En stock",     prix: 850,   image: null },
+  { id: "REF-1234", nom: "Semoule Fine Extra 5kg",       categorie: "Boulangerie",       rayon: "C2", ingredients: ["Farine", "Gluten"],    labels: ["Végétarien"],    event: "NORMAL",   stock: 12,  statut: "En stock",     prix: 4250,  image: null },
+  { id: "REF-2096", nom: "Thé Vert Sultan 200g",         categorie: "Boissons",          rayon: "C5", ingredients: ["Eau"],                 labels: ["Sans arôme"],    event: "RAMADAN",  stock: 0,   statut: "Rupture",      prix: 2200,  image: null },
+  { id: "REF-3042", nom: "Miel d'Oranger Pur 500g",      categorie: "Épicerie",          rayon: "C6", ingredients: ["Sucre"],               labels: ["Bio", "Vegan"],  event: "VENDREDI", stock: 18,  statut: "En stock",     prix: 13000, image: null },
+  { id: "REF-4413", nom: "Datte Medjool 1kg",            categorie: "Fruits et Légumes", rayon: "C1", ingredients: ["Sucre"],               labels: ["Bio", "Vegan"],  event: "AID",      stock: 5,   statut: "Stock faible", prix: 9600,  image: null },
+  { id: "REF-5521", nom: "Couscous Moyen 2kg",           categorie: "Boulangerie",       rayon: "C2", ingredients: ["Farine", "Gluten"],    labels: ["Végétarien"],    event: "NORMAL",   stock: 60,  statut: "En stock",     prix: 3200,  image: null },
+  { id: "REF-6630", nom: "Harissa Traditionnelle 200g",  categorie: "Épicerie",          rayon: "C6", ingredients: ["Huile", "Sel"],        labels: ["Vegan"],         event: "RAMADAN",  stock: 0,   statut: "Rupture",      prix: 1500,  image: null },
+  { id: "REF-7741", nom: "Eau Minérale Ifri 1.5L",       categorie: "Boissons",          rayon: "C5", ingredients: ["Eau"],                 labels: ["Sans colorant"], event: "NORMAL",   stock: 120, statut: "En stock",     prix: 600,   image: null },
+  { id: "REF-8852", nom: "Lait en Poudre 1kg",           categorie: "Produits Laitiers", rayon: "C4", ingredients: ["Lait"],                labels: ["Végétarien"],    event: "NORMAL",   stock: 9,   statut: "Stock faible", prix: 7800,  image: null },
+  { id: "REF-9963", nom: "Café Arabica Moulu 250g",      categorie: "Boissons",          rayon: "C5", ingredients: ["Eau"],                 labels: ["Sans arôme"],    event: "VENDREDI", stock: 34,  statut: "En stock",     prix: 4100,  image: null },
+  { id: "REF-1074", nom: "Huile de Table 5L",            categorie: "Épicerie",          rayon: "C6", ingredients: ["Huile"],               labels: [],                event: "NORMAL",   stock: 0,   statut: "Rupture",      prix: 8500,  image: null },
+  { id: "REF-1185", nom: "Sucre Blanc 2kg",              categorie: "Épicerie",          rayon: "C6", ingredients: ["Sucre"],               labels: ["Vegan"],         event: "NORMAL",   stock: 77,  statut: "En stock",     prix: 2100,  image: null },
 ];
 
 function getInitiales(nom: string): string {
@@ -78,6 +91,7 @@ const FORM_VIDE = {
   id: "",
   nom: "",
   categorie: "",
+  rayon: "" as Rayon | "",
   ingredients: [] as string[],
   labels: [] as string[],
   event: "NORMAL" as Event,
@@ -109,11 +123,10 @@ export default function ProduitsPage() {
   const ruptures = produits.filter((p) => p.statut === "Rupture").length;
 
   const produitsFiltres = produits
-
-   .filter((p) => {
-  if (filtreStock !== "Tous") return p.statut === filtreStock;
-  return true;
-})
+    .filter((p) => {
+      if (filtreStock !== "Tous") return p.statut === filtreStock;
+      return true;
+    })
     .filter((p) => {
       if (filtreEvenement !== "Tous") return p.event === filtreEvenement;
       return true;
@@ -154,6 +167,7 @@ export default function ProduitsPage() {
       id: produit.id,
       nom: produit.nom,
       categorie: produit.categorie,
+      rayon: produit.rayon,
       ingredients: [...produit.ingredients],
       labels: [...produit.labels],
       event: produit.event,
@@ -173,14 +187,14 @@ export default function ProduitsPage() {
     setImagePreview(null);
   }
 
- function handleSupprimer(id: string) {
-  setProduits((prev) => {
-    const newProduits = prev.filter((p) => p.id !== id);
-    const newTotalPages = Math.max(1, Math.ceil(newProduits.length / PAR_PAGE));
-    if (page > newTotalPages) setPage(newTotalPages);
-    return newProduits;
-  });
-}
+  function handleSupprimer(id: string) {
+    setProduits((prev) => {
+      const newProduits = prev.filter((p) => p.id !== id);
+      const newTotalPages = Math.max(1, Math.ceil(newProduits.length / PAR_PAGE));
+      if (page > newTotalPages) setPage(newTotalPages);
+      return newProduits;
+    });
+  }
 
   function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -190,6 +204,7 @@ export default function ProduitsPage() {
     reader.readAsDataURL(file);
   }
 
+ 
   const formValide =
     form.id.trim() !== "" &&
     form.nom.trim() !== "" &&
@@ -200,12 +215,19 @@ export default function ProduitsPage() {
   function handleEnregistrer() {
     if (!formValide) return;
 
-     const statutAuto: Statut =
-    form.stock === 0 ? "Rupture"
-    : form.stock <= 10 ? "Stock faible"
-    : "En stock";
+    const statutAuto: Statut =
+      form.stock === 0 ? "Rupture"
+      : form.stock <= 10 ? "Stock faible"
+      : "En stock";
 
-    const produitFinal: Produit = { ...form, image: imagePreview , statut: statutAuto};
+    const rayonAuto: Rayon = CATEGORIE_RAYON[form.categorie] ?? "C1";
+
+    const produitFinal: Produit = {
+      ...form,
+      rayon: rayonAuto,
+      image: imagePreview,
+      statut: statutAuto,
+    };
 
     if (modeEdition && idEdition !== null) {
       setProduits((prev) =>
@@ -218,7 +240,6 @@ export default function ProduitsPage() {
     fermerModal();
   }
 
-  // Check if any extra filter is active
   const hasActiveFilters = filtreEvenement !== "Tous" || filtreCategorie !== "Toutes" || filtreStock !== "Tous";
 
   return (
@@ -274,9 +295,7 @@ export default function ProduitsPage() {
       {/* Table */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <div className="flex justify-between items-center px-4 py-3 border-b border-gray-100 gap-3">
-          {/* Left: search  */}
           <div className="flex items-center gap-2 flex-1 min-w-0">
-            {/* Search */}
             <div className="relative flex-1 max-w-xs">
               <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 text-black" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
@@ -287,7 +306,6 @@ export default function ProduitsPage() {
             </div>
           </div>
 
-          {/* Right: statut filter */}
           <select value={filtreStock} onChange={(e) => handleFiltreStock(e.target.value)}
             className="text-xs text-black border border-gray-200 rounded-md px-2 py-1.5 bg-transparent flex-shrink-0">
             <option>Tous</option>
@@ -296,54 +314,44 @@ export default function ProduitsPage() {
             <option>Rupture</option>
           </select>
 
-          {/* Filtre Événement */}
-            <div className="flex items-center gap-1.5 flex-shrink-0">
-              <select
-                value={filtreEvenement}
-                onChange={(e) => handleFiltreEvenement(e.target.value)}
-                   className="text-xs text-black border border-gray-200 rounded-md px-2 py-1.5 bg-transparent flex-shrink-0">
-               <option value="Tous">Tous événements</option>
-               <option value="NORMAL">NORMAL</option>
-               <option value="RAMADAN">RAMADAN</option>
-               <option value="AID">AID</option>
-               <option value="VENDREDI">VENDREDI</option>
-              </select>
-            </div>
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            <select value={filtreEvenement} onChange={(e) => handleFiltreEvenement(e.target.value)}
+              className="text-xs text-black border border-gray-200 rounded-md px-2 py-1.5 bg-transparent flex-shrink-0">
+              <option value="Tous">Tous événements</option>
+              <option value="NORMAL">NORMAL</option>
+              <option value="RAMADAN">RAMADAN</option>
+              <option value="AID">AID</option>
+              <option value="VENDREDI">VENDREDI</option>
+            </select>
+          </div>
 
-            {/* Filtre Catégorie */}
-            <div className="flex items-center gap-1.5 flex-shrink-0">
-              <select
-                value={filtreCategorie}
-                onChange={(e) => handleFiltreCategorie(e.target.value)}
-                  className="text-xs text-black border border-gray-200 rounded-md px-2 py-1.5 bg-transparent flex-shrink-0">
-               <option value="Toutes">Toutes catégories</option>
-               <option value="Produits Laitiers">Produits Laitiers</option>
-               <option value="Boulangerie">Boulangerie</option>
-               <option value="Boucherie">Boucherie</option>
-               <option value="Fruits et Légumes">Fruits et Légumes</option>
-               <option value="Boissons">Boissons</option>
-               <option value="Épicerie">Épicerie</option>
-               <option value="Snack">Snack</option>
-               <option value="Surgelés">Surgelés</option>
-              </select>
-            </div>
-           
-      
-            {hasActiveFilters && (
-              <button
-                type="button"
-                onClick={() => {setFiltreStock("Tous"); setFiltreEvenement("Tous"); setFiltreCategorie("Toutes"); setPage(1); }}
-                className="flex items-center gap-1 text-[10px] text-gray-400 hover:text-red-500 transition-colors flex-shrink-0"
-                title="Réinitialiser les filtres"
-              >
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M18 6 6 18M6 6l12 12" />
-                </svg>
-                Réinitialiser
-              </button>
-            )}
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            <select value={filtreCategorie} onChange={(e) => handleFiltreCategorie(e.target.value)}
+              className="text-xs text-black border border-gray-200 rounded-md px-2 py-1.5 bg-transparent flex-shrink-0">
+              <option value="Toutes">Toutes catégories</option>
+              <option value="Produits Laitiers">Produits Laitiers</option>
+              <option value="Boulangerie">Boulangerie</option>
+              <option value="Boucherie">Boucherie</option>
+              <option value="Fruits et Légumes">Fruits et Légumes</option>
+              <option value="Boissons">Boissons</option>
+              <option value="Épicerie">Épicerie</option>
+              <option value="Snack">Snack</option>
+              <option value="Surgelés">Surgelés</option>
+            </select>
+          </div>
+
+          {hasActiveFilters && (
+            <button type="button"
+              onClick={() => { setFiltreStock("Tous"); setFiltreEvenement("Tous"); setFiltreCategorie("Toutes"); setPage(1); }}
+              className="flex items-center gap-1 text-[10px] text-gray-400 hover:text-red-500 transition-colors flex-shrink-0"
+              title="Réinitialiser les filtres">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 6 6 18M6 6l12 12" />
+              </svg>
+              Réinitialiser
+            </button>
+          )}
         </div>
-
 
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -355,6 +363,7 @@ export default function ProduitsPage() {
                 <th className="text-left px-4 py-2 text-xs font-medium text-gray-400 uppercase tracking-wide">Ingrédients</th>
                 <th className="text-left px-4 py-2 text-xs font-medium text-gray-400 uppercase tracking-wide">Labels</th>
                 <th className="text-left px-4 py-2 text-xs font-medium text-gray-400 uppercase tracking-wide">Événement</th>
+                <th className="text-left px-4 py-2 text-xs font-medium text-gray-400 uppercase tracking-wide">Rayon</th>
                 <th className="text-left px-4 py-2 text-xs font-medium text-gray-400 uppercase tracking-wide">Stock</th>
                 <th className="text-left px-4 py-2 text-xs font-medium text-gray-400 uppercase tracking-wide">Statut</th>
                 <th className="text-left px-4 py-2 text-xs font-medium text-gray-400 uppercase tracking-wide">Prix</th>
@@ -363,9 +372,9 @@ export default function ProduitsPage() {
             </thead>
             <tbody>
               {produitsPage.length === 0 ? (
-                <tr><td colSpan={10} className="text-center py-8 text-gray-400 text-sm">Aucun produit trouvé</td></tr>
+                <tr><td colSpan={11} className="text-center py-8 text-gray-400 text-sm">Aucun produit trouvé</td></tr>
               ) : (
-                produitsPage.map((produit, index) => {
+                produitsPage.map((produit) => {
                   const statut = STATUT_CONFIG[produit.statut];
                   return (
                     <tr key={produit.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
@@ -404,6 +413,12 @@ export default function ProduitsPage() {
                           {produit.event}
                         </span>
                       </td>
+                     
+                      <td className="px-4 py-3">
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#064e3b]/10 text-[#064e3b]">
+                          {produit.rayon}
+                        </span>
+                      </td>
                       <td className="px-4 py-3 text-black text-xs">{produit.stock} unités</td>
                       <td className="px-4 py-3">
                         <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statut.bg} ${statut.text}`}>{statut.label}</span>
@@ -411,23 +426,15 @@ export default function ProduitsPage() {
                       <td className="px-4 py-3 text-black text-xs font-medium">{formatPrix(produit.prix)}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
-                          <button
-                            type="button"
-                            onClick={() => ouvrirModalEdition(produit)}
-                            className="text-gray-400 hover:text-[#064e3b] transition-colors"
-                            title="Modifier"
-                          >
+                          <button type="button" onClick={() => ouvrirModalEdition(produit)}
+                            className="text-gray-400 hover:text-[#064e3b] transition-colors" title="Modifier">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                             </svg>
                           </button>
-                          <button
-                            type="button"
-                            onClick={() => handleSupprimer(produit.id)}
-                            className="text-gray-400 hover:text-red-500 transition-colors"
-                            title="Supprimer"
-                          >
+                          <button type="button" onClick={() => handleSupprimer(produit.id)}
+                            className="text-gray-400 hover:text-red-500 transition-colors" title="Supprimer">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                               <polyline points="3 6 5 6 21 6" />
                               <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
@@ -464,7 +471,6 @@ export default function ProduitsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-xl max-h-[90vh] overflow-y-auto">
 
-            {/* Modal Header */}
             <div className="flex items-start justify-between p-6 pb-4 sticky top-0 bg-white z-10 border-b border-gray-100">
               <div>
                 <h2 className="text-base font-semibold text-gray-900">
@@ -476,10 +482,8 @@ export default function ProduitsPage() {
                     : "Remplissez les informations détaillées pour l'inventaire."}
                 </p>
               </div>
-          
             </div>
 
-            {/* Modal Body */}
             <div className="px-6 py-5 flex flex-col gap-5">
 
               {/* ID + Nom */}
@@ -502,11 +506,19 @@ export default function ProduitsPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1">
                   <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Catégorie</label>
-                  <select value={form.categorie} onChange={(e) => setForm((f) => ({ ...f, categorie: e.target.value }))}
+                  <select value={form.categorie}
+                    onChange={(e) => setForm((f) => ({ ...f, categorie: e.target.value, rayon: CATEGORIE_RAYON[e.target.value] ?? "" as Rayon }))}
                     className="text-xs border border-gray-200 rounded-lg px-3 py-2 text-gray-900 bg-white focus:outline-none focus:ring-1 focus:ring-[#064e3b] focus:border-[#064e3b]">
                     <option value="">Sélectionner...</option>
                     {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
                   </select>
+                  {/* Rayon preview badge */}
+                  {form.categorie && (
+                    <p className="text-[10px] text-gray-400 mt-0.5">
+                      Rayon attribué :{" "}
+                      <span className="font-bold text-[#064e3b]">{CATEGORIE_RAYON[form.categorie]}</span>
+                    </p>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1">
                   <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Événement</label>
@@ -544,7 +556,6 @@ export default function ProduitsPage() {
                     className="text-xs border border-gray-200 rounded-lg px-3 py-2 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#064e3b] focus:border-[#064e3b]" />
                 </div>
               </div>
-
 
               {/* Ingrédients */}
               <div className="flex flex-col gap-2">
@@ -609,8 +620,7 @@ export default function ProduitsPage() {
                   className="text-xs font-medium text-gray-700 border border-gray-200 rounded-lg py-2.5 hover:bg-gray-50 transition-colors">
                   Annuler
                 </button>
-                <button type="button" onClick={handleEnregistrer}
-                  disabled={!formValide}
+                <button type="button" onClick={handleEnregistrer} disabled={!formValide}
                   className="text-xs font-medium text-white bg-[#064e3b] rounded-lg py-2.5 hover:bg-[#065f46] transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
                   {modeEdition ? "Enregistrer les Modifications" : "Enregistrer le Produit"}
                 </button>

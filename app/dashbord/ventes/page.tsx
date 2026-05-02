@@ -12,21 +12,21 @@ type ventes = {
 };
 
 const ventes = [
-  { id: "TR-1043", client: "Ramy Kaci",   amount: 8500, date: "2026-04-17" },
-  { id: "TR-1042", client: "Anis M.",     amount: 2500, date: "2026-04-17" },
-  { id: "TR-1041", client: "Sara B.",     amount: 1800, date: "2026-04-11" },
-  { id: "TR-1040", client: "Karim H.",    amount: 5500, date: "2026-04-08" },
-  { id: "TR-1039", client: "Nadia R.",    amount:  900, date: "2026-04-08" },
-  { id: "TR-1038", client: "Youcef L.",   amount: 2100, date: "2026-04-07" },
-  { id: "TR-1042", client: "Ahmed M.",    amount: 3200, date: "2026-04-09" },
-  { id: "TR-1041", client: "Sara B.",     amount: 1800, date: "2026-04-09" },
-  { id: "TR-1040", client: "Karim H.",    amount: 5500, date: "2026-04-08" },
-  { id: "TR-1039", client: "Nadia R.",    amount:  900, date: "2026-04-08" },
-  { id: "TR-1038", client: "Youcef L.",   amount: 2100, date: "2026-04-07" },
-  { id: "TR-1041", client: "Sara B.",     amount: 1800, date: "2026-04-09" },
-  { id: "TR-1040", client: "Karim H.",    amount: 5500, date: "2026-04-08" },
-  { id: "TR-1039", client: "Nadia R.",    amount:  900, date: "2024-12-08" },
-  { id: "TR-1038", client: "Youcef L.",   amount: 2100, date: "2026-04-07" },
+  { id: "TR-1043", client: "Ramy Kaci",  amount: 8500, date: "2026-01-17" },
+  { id: "TR-1042", client: "Anis M.",    amount: 2500, date: "2026-03-17" },
+  { id: "TR-1041", client: "Sara B.",    amount: 1800, date: "2026-04-28" },
+  { id: "TR-1040", client: "Karim H.",   amount: 5500, date: "2026-04-28" },
+  { id: "TR-1039", client: "Nadia R.",   amount:  900, date: "2026-03-08" },
+  { id: "TR-1038", client: "Youcef L.",  amount: 2100, date: "2026-01-07" },
+  { id: "TR-1037", client: "Ahmed M.",   amount: 3200, date: "2026-01-09" },
+  { id: "TR-1036", client: "Sara B.",    amount: 1800, date: "2026-02-09" },
+  { id: "TR-1035", client: "Karim H.",   amount: 5500, date: "2025-11-08" },
+  { id: "TR-1034", client: "Nadia R.",   amount:  900, date: "2025-11-08" },
+  { id: "TR-1033", client: "Youcef L.",  amount: 2100, date: "2025-12-07" },
+  { id: "TR-1032", client: "Sara B.",    amount: 1800, date: "2025-10-09" },
+  { id: "TR-1031", client: "Karim H.",   amount: 5500, date: "2025-10-08" },
+  { id: "TR-1030", client: "Nadia R.",   amount:  900, date: "2025-09-08" },
+  { id: "TR-1029", client: "Youcef L.",  amount: 2100, date: "2025-09-07" },
 ];
 
 function formatDate(dateStr: string): string {
