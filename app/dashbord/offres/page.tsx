@@ -18,6 +18,7 @@ type Offre = {
   ancienPrix: number;
   nouveauPrix: number;
   produits: string[];
+  image: string | null;
 };
 
 const CATALOGUE_PRODUITS: Produit[] = [
@@ -37,14 +38,14 @@ const CATALOGUE_PRODUITS: Produit[] = [
 ];
 
 const offresInitiales: Offre[] = [
-  { id: "OF-2035", titre: "Soldes d'été – Électroménager",   dateDebut: "2024-01-01", dateFin: "2026-04-31", ancienPrix: 4000,  nouveauPrix: 1899, produits: ["REF-1022", "REF-1021"] },
-  { id: "OF-2024", titre: "Soldes d'hiver – Électroménager", dateDebut: "2024-01-01", dateFin: "2024-01-31", ancienPrix: 2999,  nouveauPrix: 1899, produits: ["REF-5521", "REF-1234"] },
-  { id: "OF-2023", titre: "Pack Ramadan – Denrées de base",  dateDebut: "2024-03-10", dateFin: "2024-04-04", ancienPrix: 450,   nouveauPrix: 380,  produits: ["REF-2096", "REF-6630"] },
-  { id: "OF-2025", titre: "Offre Flash – Smartphones",       dateDebut: "2024-05-12", dateFin: "2024-05-17", ancienPrix: 5000,  nouveauPrix: 4388, produits: ["REF-9963"] },
-  { id: "OF-2026", titre: "Promo Été – Climatiseurs",        dateDebut: "2026-06-01", dateFin: "2026-07-31", ancienPrix: 8500,  nouveauPrix: 6800, produits: ["REF-3042", "REF-4413"] },
-  { id: "OF-2027", titre: "Rentrée Scolaire – Fournitures",  dateDebut: "2026-09-01", dateFin: "2026-09-15", ancienPrix: 1200,  nouveauPrix: 950,  produits: ["REF-7741"] },
-  { id: "OF-2028", titre: "Black Friday – High-Tech",        dateDebut: "2026-11-28", dateFin: "2026-11-30", ancienPrix: 12000, nouveauPrix: 9500, produits: ["REF-8852", "REF-1074"] },
-  { id: "OF-2029", titre: "Soldes Hivernaux – Chauffage",    dateDebut: "2025-12-01", dateFin: "2026-01-15", ancienPrix: 3500,  nouveauPrix: 2800, produits: ["REF-1185"] },
+  { id: "OF-2035", titre: "Soldes d'été – Électroménager",   dateDebut: "2024-01-01", dateFin: "2026-04-31", ancienPrix: 4000,  nouveauPrix: 1899, produits: ["REF-1022", "REF-1021"], image: null },
+  { id: "OF-2024", titre: "Soldes d'hiver – Électroménager", dateDebut: "2024-01-01", dateFin: "2024-01-31", ancienPrix: 2999,  nouveauPrix: 1899, produits: ["REF-5521", "REF-1234"], image: null },
+  { id: "OF-2023", titre: "Pack Ramadan – Denrées de base",  dateDebut: "2024-03-10", dateFin: "2024-04-04", ancienPrix: 450,   nouveauPrix: 380,  produits: ["REF-2096", "REF-6630"], image: null },
+  { id: "OF-2025", titre: "Offre Flash – Smartphones",       dateDebut: "2024-05-12", dateFin: "2024-05-17", ancienPrix: 5000,  nouveauPrix: 4388, produits: ["REF-9963"],             image: null },
+  { id: "OF-2026", titre: "Promo Été – Climatiseurs",        dateDebut: "2026-06-01", dateFin: "2026-07-31", ancienPrix: 8500,  nouveauPrix: 6800, produits: ["REF-3042", "REF-4413"], image: null },
+  { id: "OF-2027", titre: "Rentrée Scolaire – Fournitures",  dateDebut: "2026-09-01", dateFin: "2026-09-15", ancienPrix: 1200,  nouveauPrix: 950,  produits: ["REF-7741"],             image: null },
+  { id: "OF-2028", titre: "Black Friday – High-Tech",        dateDebut: "2026-11-28", dateFin: "2026-11-30", ancienPrix: 12000, nouveauPrix: 9500, produits: ["REF-8852", "REF-1074"], image: null },
+  { id: "OF-2029", titre: "Soldes Hivernaux – Chauffage",    dateDebut: "2025-12-01", dateFin: "2026-01-15", ancienPrix: 3500,  nouveauPrix: 2800, produits: ["REF-1185"],             image: null },
 ];
 
 function getStatut(dateDebut: string, dateFin: string): Statut {
@@ -89,6 +90,7 @@ const FORM_VIDE = {
   dateFin: "",
   nouveauPrix: 0,
   produitsIds: [] as string[],
+  image: null as string | null,
 };
 
 export default function OffresPage() {
@@ -100,6 +102,8 @@ export default function OffresPage() {
   const [modeEdition, setModeEdition] = useState(false);
   const [idEdition, setIdEdition] = useState<string | null>(null);
   const [form, setForm] = useState(FORM_VIDE);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [rechercheProduit, setRechercheProduit] = useState("");
 
   const offresAvecStatut = offres.map((o) => ({
     ...o,
@@ -119,6 +123,13 @@ export default function OffresPage() {
   const totalPages = Math.max(1, Math.ceil(offresFiltrees.length / PAR_PAGE));
   const offresPage = offresFiltrees.slice((page - 1) * PAR_PAGE, page * PAR_PAGE);
 
+  const produitsFiltres = rechercheProduit.trim() === ""
+    ? []
+    : CATALOGUE_PRODUITS.filter((p) => {
+        const q = rechercheProduit.toLowerCase().trim();
+        return p.nom.toLowerCase().includes(q) || p.id.toLowerCase().includes(q);
+      });
+
   function handleStatut(val: string) {
     setFiltreStatut(val);
     setPage(1);
@@ -133,6 +144,8 @@ export default function OffresPage() {
     setModeEdition(false);
     setIdEdition(null);
     setForm(FORM_VIDE);
+    setImagePreview(null);
+    setRechercheProduit("");
     setModalOuvert(true);
   }
 
@@ -146,7 +159,10 @@ export default function OffresPage() {
       dateFin: offre.dateFin,
       nouveauPrix: offre.nouveauPrix,
       produitsIds: [...offre.produits],
+      image: offre.image,
     });
+    setImagePreview(offre.image);
+    setRechercheProduit("");
     setModalOuvert(true);
   }
 
@@ -155,6 +171,8 @@ export default function OffresPage() {
     setModeEdition(false);
     setIdEdition(null);
     setForm(FORM_VIDE);
+    setImagePreview(null);
+    setRechercheProduit("");
   }
 
   function handleSupprimer(id: string) {
@@ -175,6 +193,35 @@ export default function OffresPage() {
     }));
   }
 
+ function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const dataUrl = ev.target?.result as string;
+
+    const img = new Image();
+    img.onload = () => {
+      const largeurValide = img.width >= 1120 && img.width <= 2000;
+      const hauteurValide = img.height >= 500 && img.height <= 892;
+
+      if (!largeurValide || !hauteurValide) {
+        alert(
+          `Dimensions non autorisées (${img.width}×${img.height}).\n\n` +
+          `Largeur acceptée : 1120px – 2000px\n` +
+          `Hauteur acceptée : 500px – 892px`
+        );
+        e.target.value = "";
+        return;
+      }
+
+      setImagePreview(dataUrl);
+    };
+    img.src = dataUrl;
+  };
+  reader.readAsDataURL(file);
+}
   const ancienPrixCalcule = getPrixCumule(form.produitsIds);
 
   const statutCalcule: Statut =
@@ -201,6 +248,7 @@ export default function OffresPage() {
       ancienPrix: ancienPrixCalcule,
       nouveauPrix: form.nouveauPrix,
       produits: form.produitsIds,
+      image: imagePreview,
     };
     if (modeEdition && idEdition !== null) {
       setOffres((prev) => prev.map((o) => (o.id === idEdition ? offreFinal : o)));
@@ -286,6 +334,7 @@ export default function OffresPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-100">
+                <th className="text-left px-4 py-2 text-xs font-medium text-gray-400 uppercase tracking-wide">Image</th>
                 <th className="text-left px-4 py-2 text-xs font-medium text-gray-400 uppercase tracking-wide">Offre</th>
                 <th className="text-left px-4 py-2 text-xs font-medium text-gray-400 uppercase tracking-wide">ID</th>
                 <th className="text-left px-4 py-2 text-xs font-medium text-gray-400 uppercase tracking-wide">Produits</th>
@@ -300,7 +349,7 @@ export default function OffresPage() {
             <tbody>
               {offresPage.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="text-center py-8 text-gray-400 text-sm">
+                  <td colSpan={10} className="text-center py-8 text-gray-400 text-sm">
                     Aucune offre trouvée
                   </td>
                 </tr>
@@ -313,18 +362,25 @@ export default function OffresPage() {
                   return (
                     <tr key={`${offre.id}-${i}`} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
                       <td className="px-4 py-3">
+                        {offre.image && (
+                          <img
+                            src={offre.image}
+                            alt={offre.titre}
+                            className="w-40 h-16 rounded-lg object-cover flex-shrink-0"
+                          />
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
                         <div className="text-gray-900 text-sm">{offre.titre}</div>
                       </td>
                       <td className="px-4 py-3 text-xs text-gray-400">{offre.id}</td>
                       <td className="px-4 py-3">
                         <div className="flex flex-col gap-1 max-w-[200px]">
-                          {
-                            produitsLies.map((p) => (
-                              <span key={p.id} className="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full w-fit">
-                                {p.nom}
-                              </span>
-                            ))
-                          }
+                          {produitsLies.map((p) => (
+                            <span key={p.id} className="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full w-fit">
+                              {p.nom}
+                            </span>
+                          ))}
                         </div>
                       </td>
                       <td className="px-4 py-3 text-black text-xs">{formatDate(offre.dateDebut)}</td>
@@ -445,7 +501,7 @@ export default function OffresPage() {
                   <input
                     type="date"
                     value={form.dateDebut}
-                    max={form.dateFin || undefined} 
+                    max={form.dateFin || undefined}
                     onChange={(e) => setForm((f) => ({ ...f, dateDebut: e.target.value }))}
                     className="text-xs border border-gray-200 rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#064e3b] focus:border-[#064e3b]"
                   />
@@ -474,43 +530,140 @@ export default function OffresPage() {
                 />
               </div>
 
+              {/* Produits concernés */}
               <div className="flex flex-col gap-2">
                 <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">Produits concernés</label>
                 <p className="text-[10px] text-gray-400 -mt-1">
-                  Sélectionnez au moins un produit. L'ancien prix sera calculé automatiquement.
+                  Recherchez et sélectionnez au moins un produit. L'ancien prix sera calculé automatiquement.
                 </p>
-                <div className="border border-gray-200 rounded-lg overflow-hidden max-h-48 overflow-y-auto">
-                  {CATALOGUE_PRODUITS.map((produit) => {
-                    const selected = form.produitsIds.includes(produit.id);
-                    return (
-                      <button
-                        key={produit.id}
-                        type="button"
-                        onClick={() => toggleProduit(produit.id)}
-                        className={`w-full flex items-center justify-between px-3 py-2 text-xs border-b border-gray-50 last:border-b-0 transition-colors ${
-                          selected ? "bg-emerald-50 text-[#064e3b]" : "hover:bg-gray-50 text-gray-700"
-                        }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 transition-colors ${
-                            selected ? "bg-[#064e3b] border-[#064e3b]" : "border-gray-300"
-                          }`}>
-                            {selected && (
-                              <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <polyline points="2 6 5 9 10 3" />
-                              </svg>
-                            )}
-                          </div>
-                          <span className="font-medium">{produit.nom}</span>
-                          <span className="text-[10px] text-gray-400">{produit.id}</span>
-                        </div>
-                        <span className={`font-medium ${selected ? "text-[#064e3b]" : "text-gray-500"}`}>
-                          {formatMontant(produit.prix)}
-                        </span>
-                      </button>
-                    );
-                  })}
+
+                {/* Barre de recherche */}
+                <div className="relative">
+                  <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+                  </svg>
+                  <input
+                    type="text"
+                    value={rechercheProduit}
+                    onChange={(e) => setRechercheProduit(e.target.value)}
+                    placeholder="Rechercher un produit par nom ou ID..."
+                    className="w-full pl-8 pr-8 py-2 text-xs border border-gray-200 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#064e3b] focus:border-[#064e3b]"
+                  />
+                  {rechercheProduit && (
+                    <button
+                      type="button"
+                      onClick={() => setRechercheProduit("")}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-500 transition-colors"
+                    >
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M2 2l8 8M10 2l-8 8" />
+                      </svg>
+                    </button>
+                  )}
                 </div>
+
+                {/* Résultats de recherche */}
+                {rechercheProduit.trim() !== "" && (
+                  <div className="border border-gray-200 rounded-lg overflow-hidden">
+                    {produitsFiltres.length === 0 ? (
+                      <p className="text-xs text-gray-400 text-center py-4">Aucun produit trouvé</p>
+                    ) : (
+                      produitsFiltres.map((produit) => {
+                        const selected = form.produitsIds.includes(produit.id);
+                        return (
+                          <button
+                            key={produit.id}
+                            type="button"
+                            onClick={() => toggleProduit(produit.id)}
+                            className={`w-full flex items-center justify-between px-3 py-2 text-xs border-b border-gray-50 last:border-b-0 transition-colors ${
+                              selected ? "bg-emerald-50 text-[#064e3b]" : "hover:bg-gray-50 text-gray-700"
+                            }`}
+                          >
+                            <div className="flex items-center gap-2">
+                              <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 transition-colors ${
+                                selected ? "bg-[#064e3b] border-[#064e3b]" : "border-gray-300"
+                              }`}>
+                                {selected && (
+                                  <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="2 6 5 9 10 3" />
+                                  </svg>
+                                )}
+                              </div>
+                              <span className="font-medium">{produit.nom}</span>
+                              <span className="text-[10px] text-gray-400">{produit.id}</span>
+                            </div>
+                            <span className={`font-medium flex-shrink-0 ${selected ? "text-[#064e3b]" : "text-gray-500"}`}>
+                              {formatMontant(produit.prix)}
+                            </span>
+                          </button>
+                        );
+                      })
+                    )}
+                  </div>
+                )}
+
+                {/* Tags produits sélectionnés */}
+                {form.produitsIds.length > 0 && (
+                  <div className="flex flex-col gap-1.5">
+                    <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
+                      Sélectionnés ({form.produitsIds.length})
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {form.produitsIds.map((pid) => {
+                        const p = CATALOGUE_PRODUITS.find((x) => x.id === pid);
+                        if (!p) return null;
+                        return (
+                          <span
+                            key={pid}
+                            className="inline-flex items-center gap-1.5 text-[10px] bg-emerald-50 text-[#064e3b] border border-emerald-200 px-2 py-1 rounded-full"
+                          >
+                            {p.nom}
+                            <button
+                              type="button"
+                              onClick={() => toggleProduit(pid)}
+                              className="hover:text-red-500 transition-colors"
+                            >
+                              <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M2 2l8 8M10 2l-8 8" />
+                              </svg>
+                            </button>
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Image de l'offre */}
+            <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-semibold text-gray-500 uppercase tracking-wide">
+                  Image de l'offre
+                </label>
+                <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-xl py-5 cursor-pointer hover:border-[#064e3b] transition-colors group">
+                  {imagePreview ? (
+                    <img
+                      src={imagePreview}
+                      alt="preview"
+                      className="h-16 w-40 object-cover rounded-lg"
+                    />
+                  ) : (
+                    <>
+                      <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-emerald-50 transition-colors">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400 group-hover:text-[#064e3b]">
+                          <rect x="3" y="3" width="18" height="18" rx="2" />
+                          <circle cx="8.5" cy="8.5" r="1.5" />
+                          <polyline points="21 15 16 10 5 21" />
+                        </svg>
+                      </div>
+                      <span className="text-xs font-medium text-gray-500 group-hover:text-[#064e3b]">
+                        Cliquez pour télécharger
+                      </span>
+                      <span className="text-[10px] text-gray-400">PNG, JPG jusqu'à 5MB</span>
+                    </>
+                  )}
+                  <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+                </label>
               </div>
 
               {(form.produitsIds.length > 0 || (form.dateDebut && form.dateFin)) && (
