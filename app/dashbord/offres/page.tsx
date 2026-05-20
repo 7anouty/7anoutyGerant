@@ -83,7 +83,8 @@ export default function OffresPage() {
   const [imageFile, setImageFile]     = useState<File | null>(null);
   const [rechercheProduit, setRechercheProduit] = useState("");
   const [enregistrement, setEnregistrement] = useState(false);
-
+const [filtreOpen, setFiltreOpen] = useState(false);
+const filtreOptions = ["Tous", "Actif", "Inactif", "À venir"];
   // ── Chargement ────────────────────────────────────────────
   const charger = useCallback(async () => {
     setChargement(true); setErreur(null);
@@ -278,10 +279,41 @@ export default function OffresPage() {
                 placeholder="Rechercher par titre ou ID..."
                 className="w-full pl-8 pr-3 py-1.5 text-xs border border-gray-200 rounded-md text-black placeholder-black focus:outline-none focus:ring-1 focus:ring-[#064e3b] focus:border-[#064e3b]" />
             </div>
-            <select value={filtreStatut} onChange={(e) => { setFiltreStatut(e.target.value); setPage(1); }}
-              className="text-xs text-black border border-gray-200 rounded-md px-2 py-1.5 bg-transparent">
-              <option>Tous</option><option>Actif</option><option>Inactif</option><option>À venir</option>
-            </select>
+          <div className="relative flex-shrink-0">
+  <button
+    type="button"
+    onClick={() => setFiltreOpen((o) => !o)}
+    className="text-xs text-black border border-gray-200 rounded-md px-2 py-1.5 bg-white flex items-center gap-2 min-w-[120px] justify-between"
+  >
+    {filtreStatut}
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+      <path d="M6 9l6 6 6-6" />
+    </svg>
+  </button>
+
+  {filtreOpen && (
+    <div className="absolute right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-50 min-w-[140px] overflow-hidden">
+      {filtreOptions.map((opt) => (
+        <button
+          key={opt}
+          type="button"
+          onClick={() => {
+            setFiltreStatut(opt);
+            setPage(1);
+            setFiltreOpen(false);
+          }}
+          className={`w-full text-left px-3 py-2 text-xs transition-colors ${
+            filtreStatut === opt
+              ? "bg-[#064e3b] text-white"
+              : "text-gray-700 hover:bg-emerald-50 hover:text-[#064e3b]"
+          }`}
+        >
+          {opt}
+        </button>
+      ))}
+    </div>
+  )}
+</div>
           </div>
 
           <div className="overflow-x-auto">

@@ -132,6 +132,9 @@ export default function ProduitsPage() {
   const [imagePreview, setImagePreview]       = useState<string | null>(null);
   const [imageFile, setImageFile]             = useState<File | null>(null);
   const [enregistrement, setEnregistrement]   = useState(false);
+  const [stockOpen, setStockOpen]         = useState(false);
+const [evenementOpen, setEvenementOpen] = useState(false);
+const [categorieOpen, setCategorieOpen] = useState(false);
 
   // ── Chargement ───────────────────────────────────────────────
   const chargerProduits = useCallback(async () => {
@@ -365,24 +368,62 @@ export default function ProduitsPage() {
             </div>
 
         
-            <select value={filtreStock} onChange={(e) => { setFiltreStock(e.target.value); setPage(1); }}
-              className="text-xs text-black border border-gray-200 rounded-md px-2 py-1.5 bg-transparent">
-              <option value="Tous">Tous</option>
-              <option value="EN_STOCK">En stock</option>
-              <option value="STOCK_FAIBLE">Stock faible</option>
-              <option value="RUPTURE">Rupture</option>
-            </select>
+            {/* Filtre Stock */}
+<div className="relative flex-shrink-0">
+  <button type="button" onClick={() => { setStockOpen(o => !o); setEvenementOpen(false); setCategorieOpen(false); }}
+    className="text-xs text-black border border-gray-200 rounded-md px-2 py-1.5 bg-white flex items-center gap-2 min-w-[110px] justify-between">
+    {filtreStock === "Tous" ? "Tous" : filtreStock === "EN_STOCK" ? "En stock" : filtreStock === "STOCK_FAIBLE" ? "Stock faible" : "Rupture"}
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6"/></svg>
+  </button>
+  {stockOpen && (
+    <div className="absolute left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-50 min-w-[130px] overflow-hidden">
+      {[["Tous","Tous"],["EN_STOCK","En stock"],["STOCK_FAIBLE","Stock faible"],["RUPTURE","Rupture"]].map(([val, label]) => (
+        <button key={val} type="button" onClick={() => { setFiltreStock(val); setPage(1); setStockOpen(false); }}
+          className={`w-full text-left px-3 py-2 text-xs transition-colors ${filtreStock === val ? "bg-[#064e3b] text-white" : "text-gray-700 hover:bg-emerald-50 hover:text-[#064e3b]"}`}>
+          {label}
+        </button>
+      ))}
+    </div>
+  )}
+</div>
 
-            <select value={filtreEvenement} onChange={(e) => { setFiltreEvenement(e.target.value); setPage(1); }}
-              className="text-xs text-black border border-gray-200 rounded-md px-2 py-1.5 bg-transparent">
-              <option value="Tous">Tous événements</option>
-              {EVENTS.map((ev) => <option key={ev} value={ev}>{ev}</option>)}
-            </select>
-            <select value={filtreCategorie} onChange={(e) => { setFiltreCategorie(e.target.value); setPage(1); }}
-              className="text-xs text-black border border-gray-200 rounded-md px-2 py-1.5 bg-transparent">
-              <option value="Toutes">Toutes catégories</option>
-              {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
-            </select>
+{/* Filtre Événement */}
+<div className="relative flex-shrink-0">
+  <button type="button" onClick={() => { setEvenementOpen(o => !o); setStockOpen(false); setCategorieOpen(false); }}
+    className="text-xs text-black border border-gray-200 rounded-md px-2 py-1.5 bg-white flex items-center gap-2 min-w-[130px] justify-between">
+    {filtreEvenement === "Tous" ? "Tous événements" : filtreEvenement}
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6"/></svg>
+  </button>
+  {evenementOpen && (
+    <div className="absolute left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-50 min-w-[140px] overflow-hidden">
+      {["Tous", ...EVENTS].map((ev) => (
+        <button key={ev} type="button" onClick={() => { setFiltreEvenement(ev); setPage(1); setEvenementOpen(false); }}
+          className={`w-full text-left px-3 py-2 text-xs transition-colors ${filtreEvenement === ev ? "bg-[#064e3b] text-white" : "text-gray-700 hover:bg-emerald-50 hover:text-[#064e3b]"}`}>
+          {ev === "Tous" ? "Tous événements" : ev}
+        </button>
+      ))}
+    </div>
+  )}
+</div>
+
+{/* Filtre Catégorie */}
+<div className="relative flex-shrink-0">
+  <button type="button" onClick={() => { setCategorieOpen(o => !o); setStockOpen(false); setEvenementOpen(false); }}
+    className="text-xs text-black border border-gray-200 rounded-md px-2 py-1.5 bg-white flex items-center gap-2 min-w-[140px] justify-between">
+    {filtreCategorie === "Toutes" ? "Toutes catégories" : filtreCategorie}
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M6 9l6 6 6-6"/></svg>
+  </button>
+  {categorieOpen && (
+    <div className="absolute left-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-50 min-w-[160px] overflow-hidden">
+      {["Toutes", ...CATEGORIES].map((c) => (
+        <button key={c} type="button" onClick={() => { setFiltreCategorie(c); setPage(1); setCategorieOpen(false); }}
+          className={`w-full text-left px-3 py-2 text-xs transition-colors ${filtreCategorie === c ? "bg-[#064e3b] text-white" : "text-gray-700 hover:bg-emerald-50 hover:text-[#064e3b]"}`}>
+          {c === "Toutes" ? "Toutes catégories" : c}
+        </button>
+      ))}
+    </div>
+  )}
+</div>
             {hasActiveFilters && (
               <button type="button" onClick={resetFiltres}
                 className="flex items-center gap-1 text-[10px] text-gray-400 hover:text-red-500 transition-colors">
